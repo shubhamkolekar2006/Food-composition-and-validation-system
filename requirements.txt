@@ -5,4 +5,5 @@ numpy==2.3.4
 pandas==2.3.3
 joblib==1.4.2
 gunicorn==21.2.0
+Cython
 scikit-learn==1.3.2
