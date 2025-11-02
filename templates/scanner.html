@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scan Product Barcode | Health Score Predictor</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <style>
+      :root {
+        --primary-color: #382aa3;
+        --secondary-color: #6c63ff;
+        --accent-color: #ff6584;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+      }
+
+      body {
+        background-color: #f5f7ff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: white !important;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        margin: 0 0.2rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .container {
+        max-width: 800px;
+      }
+
+      .scan-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+      }
+
+      .scan-section:hover {
+        transform: translateY(-5px);
+      }
+
+      .scanner-container {
+        width: 100%;
+        max-width: 500px;
+        height: 300px;
+        margin: 1rem auto;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        border: 3px solid var(--secondary-color);
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+      }
+
+      .scanner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          rgba(56, 42, 163, 0.3) 0%,
+          rgba(56, 42, 163, 0.1) 50%,
+          rgba(56, 42, 163, 0.3) 100%
+        );
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .btn-scan {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-color) 0%,
+          var(--primary-color) 100%
+        );
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      .btn-scan:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.6);
+      }
+
+      .btn-stop {
+        background: linear-gradient(135deg, #ff6584 0%, #ff3366 100%);
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(255, 101, 132, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      .btn-stop:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 101, 132, 0.6);
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: var(--dark-color);
+      }
+
+      .form-control {
+        border-radius: 10px;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+      }
+
+      .btn-submit {
+        background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
+      }
+
+      .result-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-top: 2rem;
+        border-left: 5px solid var(--secondary-color);
+      }
+
+      .error-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-top: 2rem;
+        border-left: 5px solid var(--accent-color);
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(108, 99, 255, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
+        }
+      }
+
+      .how-to-scan {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .step {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .step-number {
+        background: var(--secondary-color);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        font-weight: bold;
+      }
+
+      footer {
+        background: linear-gradient(135deg, var(--dark-color) 0%, #000000 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-top: 4rem;
+      }
+
+      /* Results Section Styling */
+.result-container {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin: 25px 0;
+  overflow: hidden;
+}
+
+.result-header {
+  background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.result-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.result-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.result-content {
+  padding: 20px;
+}
+
+.result-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.result-footer {
+  background: #f1f8ff;
+  padding: 10px 15px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  font-size: 0.9rem;
+  color: #28a745;
+}
+
+/* Error Section Styling */
+.error-container {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin: 25px 0;
+  overflow: hidden;
+}
+
+.error-header {
+  background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.error-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.error-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.error-content {
+  padding: 20px;
+}
+
+.error-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.suggestion-box {
+  background: #fff8e6;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.suggestion-box ul {
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+
+.suggestion-box li {
+  margin-bottom: 5px;
+}
+
+
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img
+            src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+            width="40"
+            height="40"
+            class="d-inline-block align-top mr-2 rounded-circle"
+            alt="Health Logo"
+          />
+          Health Score Predictor
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/"><i class="/"></i> Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manual"
+                ><i class="/manual"></i> Manual Predict</a
+              >
+            </li>
+            
+            <li class="nav-item active">
+              <a class="nav-link" href="/scan"><i class="/scan"></i> Scan</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container my-5">
+      <div class="text-center mb-5">
+        <h1
+          class="font-weight-bold text-dark mb-3 animate__animated animate__fadeIn"
+        >
+          Scan Product Barcode
+        </h1>
+        <p
+          class="lead text-muted animate__animated animate__fadeIn animate__delay-1s"
+        >
+          Scan your product's barcode to get instant health score information
+        </p>
+      </div>
+
+      <!-- Scan Section -->
+      <div class="scan-section animate__animated animate__fadeInUp">
+        <h3 class="text-center mb-4">
+          <i class="fas fa-camera text-primary mr-2"></i> Camera Scanner
+        </h3>
+
+        <div class="text-center">
+          <div id="scanner-container" class="scanner-container">
+            <div class="scanner-overlay"></div>
+            <video style="width: 100%; height: 100%; object-fit: cover"></video>
+          </div>
+
+          <div class="mt-4">
+            <button
+              class="btn btn-scan text-white mr-3"
+              onclick="startScanner()"
+            >
+              <i class="fas fa-play mr-2"></i> Start Scanner
+            </button>
+            <button class="btn btn-stop text-white" onclick="stopScanner()">
+              <i class="fas fa-stop mr-2"></i> Stop Scanner
+            </button>
+          </div>
+
+          <div class="mt-3 text-muted">
+            <small>Position the barcode in the center of the frame</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="d-flex align-items-center my-4">
+        <hr class="flex-grow-1" />
+        <span class="px-3 text-muted">OR</span>
+        <hr class="flex-grow-1" />
+      </div>
+
+      <!-- Manual Entry Section -->
+      <div
+        class="scan-section animate__animated animate__fadeInUp animate__delay-1s"
+        id="manualForm"
+      >
+        <h3 class="text-center mb-4">
+          <i class="fas fa-keyboard text-primary mr-2"></i> Manual Entry
+        </h3>
+
+        <form method="POST">
+          <div class="form-group">
+            <label for="barcode"
+              ><i class="fas fa-barcode mr-2"></i> Enter Barcode:</label
+            >
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"
+                  ><i class="fas fa-search"></i
+                ></span>
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                id="barcode"
+                name="barcode"
+                placeholder="Enter product barcode (e.g. 012345678905)"
+                required
+              />
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-submit text-white btn-block mt-4"
+          >
+            <i class="fas fa-paper-plane mr-2"></i> Get Health Score
+          </button>
+        </form>
+      </div>
+
+     <!-- Results Section -->
+<!-- Results Section -->
+{% if message %}
+<div class="result-container animate__animated animate__fadeInUp" id="result">
+  <div class="result-header">
+    <i class="fas fa-clipboard-check result-icon"></i>
+    <h3 class="result-title">Scan Results</h3>
+  </div>
+  <div class="result-content">
+    <div class="result-card">
+      <div class="card-body p-4">
+        {{ message | safe }}
+      </div>
+      <div class="result-footer">
+        <i class="fas fa-check-circle text-success mr-2"></i>
+        <span>Scan successful</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %} 
+
+{% if error %}
+<div class="error-container animate__animated animate__shakeX">
+  <div class="error-header">
+    <i class="fas fa-exclamation-triangle error-icon"></i>
+    <h3 class="error-title">Oops! Something went wrong</h3>
+  </div>
+  <div class="error-content">
+    <div class="error-card">
+      <div class="card-body p-4">
+        <div class="alert alert-danger alert-dismissible fade show">
+          {{ error }}
+          <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="suggestion-box">
+          <i class="fas fa-lightbulb text-warning mr-2"></i>
+          <span>Try these solutions:</span>
+          <ul class="mt-2">
+            <li>Check the barcode quality and try scanning again</li>
+            <li>Enter the barcode manually if possible</li>
+            <li>Ensure proper lighting conditions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+<!-- Full-width Footer -->
+<!-- Footer -->
+    <footer>
+      <div class="container text-center">
+        <img
+          src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+          width="40"
+          height="40"
+          class="d-inline-block align-top mr-2 rounded-circle"
+          alt="Health Logo"
+        />
+        <h4 class="d-inline-block">Health Score Predictor</h4>
+        
+      </div>
+    </footer>
+
+    <script>
+      function startScanner() {
+        // Show loading state
+        const startBtn = document.querySelector(".btn-scan");
+        startBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin mr-2"></i> Starting...';
+        startBtn.disabled = true;
+
+        Quagga.init(
+          {
+            inputStream: {
+              type: "LiveStream",
+              target: document.querySelector("#scanner-container"),
+              constraints: {
+                facingMode: "environment",
+                focusMode: "continuous",
+              },
+            },
+            decoder: {
+              readers: [
+                "ean_reader",
+                "upc_reader",
+                "ean_8_reader",
+                "code_128_reader",
+              ],
+              multiple: false,
+            },
+            locate: true,
+            debug: {
+              drawBoundingBox: true,
+              showFrequency: true,
+              drawScanline: true,
+              showPattern: true,
+            },
+          },
+          function (err) {
+            if (err) {
+              console.error(err);
+              alert("Error starting scanner: " + err.message);
+              startBtn.innerHTML =
+                '<i class="fas fa-play mr-2"></i> Start Scanner';
+              startBtn.disabled = false;
+              return;
+            }
+
+            // Add scanner border animation
+            document.querySelector(".scanner-container").classList.add("pulse");
+
+            Quagga.start();
+            startBtn.innerHTML =
+              '<i class="fas fa-camera mr-2"></i> Scanning...';
+
+            // Add detection sound
+            const audio = new Audio(
+              "https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"
+            );
+
+            Quagga.onDetected(function (result) {
+              const code = result.codeResult.code;
+              console.log("Detected barcode: ", code);
+              document.getElementById("barcode").value = code;
+
+              // Play sound
+              audio.play();
+
+              // Visual feedback
+              document
+                .querySelector(".scanner-container")
+                .classList.remove("pulse");
+              document.querySelector(".scanner-container").style.borderColor =
+                "#28a745";
+              setTimeout(() => {
+                document.querySelector(".scanner-container").style.borderColor =
+                  "var(--secondary-color)";
+              }, 1000);
+
+              stopScanner();
+
+              // Auto-submit form if desired
+              // document.forms[0].submit();
+            });
+          }
+        );
+      }
+
+      function stopScanner() {
+        Quagga.stop();
+        document.querySelector(".scanner-container").classList.remove("pulse");
+
+        // Reset button states
+        const startBtn = document.querySelector(".btn-scan");
+        startBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Start Scanner';
+        startBtn.disabled = false;
+
+        console.log("Scanner stopped");
+      }
+
+      // Clean up on page leave
+      window.addEventListener("beforeunload", function () {
+        if (Quagga) {
+          Quagga.stop();
+        }
+      });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

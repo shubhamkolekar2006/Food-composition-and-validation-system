@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Health Score Predictor</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #382aa3;
+        --secondary-color: #6c63ff;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        color: white !important;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .hero-section {
+        background: linear-gradient(
+            rgba(56, 42, 163, 0.8),
+            rgba(108, 99, 255, 0.8)
+          ),
+          url("https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 5rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 20px 20px;
+      }
+
+      .feature-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: white;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .feature-icon {
+        font-size: 2.5rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+      }
+
+      footer {
+        background: linear-gradient(135deg, #343a40 0%, #000000 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-top: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img
+            src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+            width="40"
+            height="40"
+            class="d-inline-block align-top mr-2 rounded-circle"
+            alt="Health Logo"
+          />
+          Health Score Predictor
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/"
+                ><i class="fas fa-home mr-1"></i> Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manual"
+                ><i class="fas fa-keyboard mr-1"></i> Manual Predict</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/scan"
+                ><i class="fas fa-barcode mr-1"></i> Scan Product</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section text-center">
+      <div class="container">
+        <h1 class="display-4 font-weight-bold mb-4">
+          Welcome to Health Score Predictor
+        </h1>
+        <p class="lead mb-4">
+          Discover the nutritional value of your food products instantly
+        </p>
+        <a href="/manual" class="btn btn-outline-light btn-lg">
+          <i class="fas fa-keyboard mr-2"></i> Enter Manually
+        </a>
+        <a href="/scan" class="btn btn-outline-light btn-lg">
+          <i class="fas fa-barcode mr-2"></i> Scan Barcode
+        </a>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <i class="fas fa-heartbeat"></i>
+            </div>
+            <h3>Health Scoring</h3>
+            <p>
+              Get an instant health score based on comprehensive nutritional
+              analysis of food products.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <i class="fas fa-barcode"></i>
+            </div>
+            <h3>Barcode Scanning</h3>
+            <p>
+              Simply scan product barcodes to retrieve nutritional information
+              instantly.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3>Nutritional Insights</h3>
+            <p>
+              Understand the nutritional value of your food with detailed
+              breakdowns.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto text-center">
+          <h2 class="mb-4">How It Works</h2>
+          <div class="row text-left mt-5">
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2">1</span> Choose Your
+                Method
+              </h4>
+              <p>
+                Either enter nutritional information manually or scan a product
+                barcode.
+              </p>
+            </div>
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2">2</span> Get Instant
+                Analysis
+              </h4>
+              <p>
+                Our algorithm calculates a health score based on the nutritional
+                data.
+              </p>
+            </div>
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2">3</span> View Results
+              </h4>
+              <p>
+                See your product's health score and detailed nutritional
+                feedback.
+              </p>
+            </div>
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2">4</span> Make Healthier
+                Choices
+              </h4>
+              <p>
+                Use the information to select better food options for your diet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container text-center">
+        <img
+          src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+          width="40"
+          height="40"
+          class="d-inline-block align-top mr-2 rounded-circle"
+          alt="Health Logo"
+        />
+        <h4 class="d-inline-block">Health Score Predictor</h4>
+        <p class="mt-3">
+          Making nutritional information accessible to everyone
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediction Result</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-light"
+      style="background-color: rgba(56, 42, 163, 0.85)"
+    >
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img
+          src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+          width="30"
+          height="30"
+          class="d-inline-block align-top mr-2"
+          alt="Health Logo"
+        />
+        Health Score Predictor
+      </a>
+    </nav>
+
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">Prediction Result</h2>
+
+      <!-- Display the result -->
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">Prediction Result</div>
+        <div class="card-body">
+          <h4>Health Score: <span>{{ score }}</span></h4>
+          <div class="progress">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              style="width: {{ score }}%"
+            ></div>
+          </div>
+          <p class="mt-2">{{ feedback }}</p>
+        </div>
+      </div>
+
+      <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  </body>
+</html>

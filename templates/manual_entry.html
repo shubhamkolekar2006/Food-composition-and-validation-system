@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Health Score Predictor</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <style>
+      :root {
+        --primary-color: #382aa3;
+        --secondary-color: #6c63ff;
+        --accent-color: #ff6584;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+      }
+
+      body {
+        background-color: #f5f7ff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: white !important;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        margin: 0 0.2rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .container {
+        max-width: 800px;
+      }
+
+      .scan-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+      }
+
+      .scan-section:hover {
+        transform: translateY(-5px);
+      }
+
+      .scanner-container {
+        width: 100%;
+        max-width: 500px;
+        height: 300px;
+        margin: 1rem auto;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        border: 3px solid var(--secondary-color);
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+      }
+
+      .scanner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          rgba(56, 42, 163, 0.3) 0%,
+          rgba(56, 42, 163, 0.1) 50%,
+          rgba(56, 42, 163, 0.3) 100%
+        );
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .btn-scan {
+        background: linear-gradient(
+          135deg,
+          var(--secondary-color) 0%,
+          var(--primary-color) 100%
+        );
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      .btn-scan:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.6);
+      }
+
+      .btn-stop {
+        background: linear-gradient(135deg, #ff6584 0%, #ff3366 100%);
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(255, 101, 132, 0.4);
+        transition: all 0.3s ease;
+      }
+
+      .btn-stop:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 101, 132, 0.6);
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: var(--dark-color);
+      }
+
+      .form-control {
+        border-radius: 10px;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+      }
+
+      .btn-submit {
+        background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
+      }
+
+      .result-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-top: 2rem;
+        border-left: 5px solid var(--secondary-color);
+      }
+
+      .error-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-top: 2rem;
+        border-left: 5px solid var(--accent-color);
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(108, 99, 255, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
+        }
+      }
+
+      .how-to-scan {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .step {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .step-number {
+        background: var(--secondary-color);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        font-weight: bold;
+      }
+
+      footer {
+        background: linear-gradient(135deg, var(--dark-color) 0%, #000000 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-top: 4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img
+            src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+            width="40"
+            height="40"
+            class="d-inline-block align-top mr-2 rounded-circle"
+            alt="Health Logo"
+          />
+          Health Score Predictor
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/"
+                ><i class="fas fa-home mr-1"></i> Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manual"
+                ><i class="fas fa-keyboard mr-1"></i> Manual Predict</a
+              >
+            </li>
+            
+            <li class="nav-item active">
+              <a class="nav-link" href="/scan"
+                ><i class="fas fa-barcode mr-1"></i> Scan</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">Food Health Score Predictor</h2>
+
+      <!-- Manual Input Section -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          Enter Nutritional Info Manually
+        </div>
+        <div class="card-body">
+          <form id="manualForm">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="name"
+                  placeholder="Product Name (Optional)"
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="calories"
+                  placeholder="Calories"
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="sugar"
+                  placeholder="Sugar (g)"
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="fat"
+                  placeholder="Fat (g)"
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="saturated_fat"
+                  placeholder="Saturated Fat (g)"
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="proteins"
+                  placeholder="Proteins (g)"
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="fibers"
+                  placeholder="Fibers (g)"
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  type="number"
+                  class="form-control"
+                  name="sodium"
+                  placeholder="Sodium (mg)"
+                />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              Predict Score
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Result Section -->
+      <div id="result" class="card mb-4" style="display: none">
+        <div class="card-header bg-success text-white">Prediction Result</div>
+        <div class="card-body">
+          <h4>Health Score: <span id="score"></span></h4>
+          <div class="progress">
+            <div id="progressBar" class="progress-bar" role="progressbar"></div>
+          </div>
+          <p class="mt-2" id="feedback"></p>
+        </div>
+      </div>
+
+      <!-- Scan Options Section -->
+      <div class="card">
+        <div class="card-header bg-info text-white">Or Scan Product</div>
+        <div class="card-body">
+          <p>Choose a method to scan product information:</p>
+
+          <a href="/scan">
+            <button class="btn btn-primary mb-2">Scan Product (Barcode)</button>
+          </a>
+
+          <video id="qrVideo" width="300" style="display: none"></video>
+          <input
+            type="file"
+            id="ocrInput"
+            style="display: none"
+            accept="image/*"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <!-- Footer -->
+    <footer>
+      <div class="container text-center">
+        <img
+          src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+          width="40"
+          height="40"
+          class="d-inline-block align-top mr-2 rounded-circle"
+          alt="Health Logo"
+        />
+        <h4 class="d-inline-block">Health Score Predictor</h4>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="{{ url_for('static', filename='js/qr.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ocr.js') }}"></script>
+    <script>
+      $(document).ready(function () {
+        // Form submission with validation
+        $("#manualForm").on("submit", function (e) {
+          e.preventDefault();
+
+          // Validate required fields
+          const requiredFields = [
+            "calories",
+            "sugar",
+            "fat",
+            "saturated_fat",
+            "proteins",
+            "fibers",
+            "sodium",
+          ];
+
+          let isValid = true;
+          let data = {};
+          let emptyFields = [];
+
+          // Collect data and validate
+          $(this)
+            .serializeArray()
+            .forEach((x) => {
+              data[x.name] = x.value;
+              if (requiredFields.includes(x.name)) {
+                if (!x.value) {
+                  isValid = false;
+                  emptyFields.push(x.name.replace(/_/g, " "));
+                  $(`[name="${x.name}"]`).addClass("is-invalid");
+                } else if (isNaN(x.value)) {
+                  isValid = false;
+                  $(`[name="${x.name}"]`).addClass("is-invalid");
+                  alert(
+                    `Please enter a valid number for ${x.name.replace(
+                      /_/g,
+                      " "
+                    )}`
+                  );
+                }
+              }
+            });
+
+          if (!isValid) {
+            if (emptyFields.length > 0) {
+              alert(
+                `Please fill in all required fields: ${emptyFields.join(", ")}`
+              );
+            }
+            return;
+          }
+
+          // Show loading state
+          const submitBtn = $(this).find('button[type="submit"]');
+          const originalText = submitBtn.html();
+          submitBtn.html(
+            '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...'
+          );
+          submitBtn.prop("disabled", true);
+
+          // Convert numeric fields
+          requiredFields.forEach((field) => {
+            data[field] = parseFloat(data[field]);
+          });
+
+          // AJAX call with proper JSON headers
+          $.ajax({
+            url: "/manual",
+            type: "POST",
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (response) {
+              $("#result").show();
+              const score = Math.round(response.score);
+              $("#score").text(score);
+              $("#feedback").text(response.feedback);
+              $("#progressBar")
+                .css("width", score + "%")
+                .removeClass("bg-danger bg-warning bg-success")
+                .addClass(
+                  score < 40
+                    ? "bg-danger"
+                    : score < 70
+                    ? "bg-warning"
+                    : "bg-success"
+                );
+            },
+            error: function (xhr) {
+              let errorMsg = "An error occurred while predicting the score";
+              try {
+                const response = JSON.parse(xhr.responseText);
+                errorMsg = response.error || errorMsg;
+                if (xhr.status === 415) {
+                  errorMsg =
+                    "Server error: Please contact support (invalid content type)";
+                }
+              } catch (e) {
+                console.error("Error parsing response:", e);
+              }
+              alert(errorMsg);
+            },
+            complete: function () {
+              submitBtn.html(originalText);
+              submitBtn.prop("disabled", false);
+            },
+          });
+        });
+
+        // Clear validation on input
+        $("input[type='number']").on("input", function () {
+          $(this).removeClass("is-invalid");
+        });
+      });
+    </script>
+
+    <script>
+      $("a.nav-link").on("click", function (e) {
+        if (this.hash !== "") {
+          e.preventDefault();
+          let hash = this.hash;
+          $("html, body").animate(
+            {
+              scrollTop: $(hash).offset().top - 70,
+            },
+            800
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
