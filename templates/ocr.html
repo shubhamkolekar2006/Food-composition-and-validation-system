@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OCR Label Scanner | Health Score Predictor</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #382aa3;
+        --secondary-color: #6c63ff;
+        --accent-color: #ff6584;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+      }
+
+      body {
+        background-color: #f5f7ff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: white !important;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        margin: 0 0.2rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .container {
+        max-width: 900px;
+      }
+
+      .card-premium {
+        background: white;
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+      }
+
+      .upload-area {
+        border: 3px dashed #cbd5e0;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        text-align: center;
+        background: #fdfdfd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover, .upload-area.dragover {
+        border-color: var(--secondary-color);
+        background: rgba(108, 99, 255, 0.03);
+      }
+
+      .upload-icon {
+        font-size: 3.5rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+      }
+
+      .upload-area:hover .upload-icon {
+        transform: translateY(-5px);
+      }
+
+      .img-preview-container {
+        position: relative;
+        max-width: 100%;
+        height: 250px;
+        overflow: hidden;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+      }
+
+      .img-preview {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+      }
+
+      .camera-container {
+        border: 3px solid var(--secondary-color);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        background: #000;
+        height: 250px;
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.2);
+      }
+
+      #camera-feed {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .camera-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #718096;
+        background: #edf2f7;
+        z-index: 2;
+      }
+
+      .btn-premium {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .btn-premium:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.5);
+      }
+
+      .btn-premium:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .result-container {
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin: 25px 0;
+        overflow: hidden;
+      }
+
+      .result-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .result-icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+      }
+
+      .result-title {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .result-content {
+        padding: 20px;
+      }
+
+      .result-card-inner {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .result-footer {
+        background: #f1f8ff;
+        padding: 10px 15px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        font-size: 0.9rem;
+        color: #28a745;
+      }
+
+      .table-extracted {
+        font-size: 0.9rem;
+      }
+
+      .table-extracted th {
+        font-weight: 600;
+        color: #4a5568;
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(108, 99, 255, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(108, 99, 255, 0);
+        }
+      }
+
+      footer {
+        background: linear-gradient(135deg, var(--dark-color) 0%, #000000 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-top: 4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <img
+            src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+            width="40"
+            height="40"
+            class="d-inline-block align-top mr-2 rounded-circle"
+            alt="Health Logo"
+          />
+          Health Score Predictor
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/"
+                ><i class="fas fa-home mr-1"></i> Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manual"
+                ><i class="fas fa-keyboard mr-1"></i> Manual Predict</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/scan"
+                ><i class="fas fa-barcode mr-1"></i> Scan</a
+              >
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="/ocr"
+                ><i class="fas fa-camera mr-1"></i> OCR Scan</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-5">
+      <div class="text-center mb-5 animate__animated animate__fadeIn">
+        <h1 class="font-weight-bold text-dark mb-3">Scan Label with OCR</h1>
+        <p class="lead text-muted">
+          Analyze food ingredients and nutrition facts tables directly using your camera or uploaded images.
+        </p>
+      </div>
+
+      <div class="row">
+        <!-- Option 1: Image Upload Column -->
+        <div class="col-md-6 mb-4 animate__animated animate__fadeInLeft">
+          <div class="card card-premium p-4 h-100">
+            <h4 class="mb-3 font-weight-bold text-dark">
+              <i class="fas fa-image text-primary mr-2"></i> Option 1: Upload Image
+            </h4>
+            
+            <!-- Drag and Drop Area -->
+            <div id="drop-zone" class="upload-area mb-4">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <h6 class="font-weight-bold">Drag & Drop Image Here</h6>
+              <p class="text-muted small">or click to browse from device</p>
+            </div>
+
+            <!-- Hidden file input outside of drop-zone clickable area to fix browse button -->
+            <input
+              type="file"
+              id="file-input"
+              style="display: none"
+              accept="image/*"
+            />
+
+            <!-- Preview Container -->
+            <div id="preview-box" style="display: none;">
+              <h6 class="font-weight-bold mb-2 text-muted">Uploaded Image:</h6>
+              <div class="img-preview-container mb-3">
+                <img id="preview-img" src="" class="img-preview" alt="Nutrition Facts Preview" />
+              </div>
+              <button id="btn-reupload" class="btn btn-outline-secondary btn-block btn-sm">
+                <i class="fas fa-redo mr-2"></i> Choose Different Image
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Live Camera Column -->
+        <div class="col-md-6 mb-4 animate__animated animate__fadeInRight">
+          <div class="card card-premium p-4 h-100">
+            <h4 class="mb-3 font-weight-bold text-dark">
+              <i class="fas fa-camera text-primary mr-2"></i> Option 2: Live Camera
+            </h4>
+
+            <div class="camera-container mb-4">
+              <!-- Camera Placeholder -->
+              <div id="camera-placeholder" class="camera-placeholder">
+                <i class="fas fa-video-slash fa-3x mb-2"></i>
+                <p class="small font-weight-bold">Camera is turned off</p>
+              </div>
+              <!-- Video Feed -->
+              <video id="camera-feed" autoplay playsinline style="display: none;"></video>
+            </div>
+
+            <div class="d-flex justify-content-center">
+              <button id="btn-start-camera" class="btn btn-premium m-1">
+                <i class="fas fa-play mr-2"></i> Start Camera
+              </button>
+              <button id="btn-capture" class="btn btn-success m-1" disabled style="border-radius: 50px; font-weight: 600;">
+                <i class="fas fa-camera mr-2"></i> Capture & Scan
+              </button>
+              <button id="btn-stop-camera" class="btn btn-danger m-1" disabled style="border-radius: 50px; font-weight: 600;">
+                <i class="fas fa-stop mr-2"></i> Stop
+              </button>
+            </div>
+
+            <!-- Hidden canvas for capturing frame -->
+            <canvas id="capture-canvas" style="display: none;"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- OCR Progress Bar Container -->
+      <div id="ocr-progress-container" style="display: none;" class="mb-4 alert alert-info animate__animated animate__fadeIn">
+        <div class="d-flex align-items-center mb-2">
+          <i class="fas fa-spinner fa-spin mr-3 fa-lg"></i>
+          <strong id="ocr-status-msg">Initializing OCR Engine...</strong>
+        </div>
+        <div class="progress" style="height: 10px;">
+          <div
+            id="ocr-progress"
+            class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+            role="progressbar"
+            style="width: 0%;"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Results Display Container -->
+      <div id="result-box" style="display: none;" class="animate__animated animate__fadeInUp">
+        <div class="result-container">
+          <div class="result-header">
+            <i class="fas fa-clipboard-check result-icon"></i>
+            <h3 class="result-title">Health Analysis Report</h3>
+          </div>
+          <div class="result-content">
+            <div class="result-card-inner p-4">
+              <div class="row align-items-center">
+                <div class="col-md-7">
+                  <h4 class="font-weight-bold mb-3">
+                    OCR Scan Result
+                  </h4>
+                  <div class="mb-4">
+                    <span class="font-weight-bold">Predicted Health Score:</span>
+                    <h2 class="display-4 font-weight-bold text-success d-inline-block ml-2 mb-0" id="res-score">
+                      0
+                    </h2>
+                    <span class="text-muted font-weight-bold">/ 100</span>
+                  </div>
+                  <div class="progress mb-3" style="height: 15px;">
+                    <div
+                      id="res-progress-bar"
+                      class="progress-bar"
+                      role="progressbar"
+                      style="width: 0%;"
+                    ></div>
+                  </div>
+                  <p class="lead font-weight-bold" id="res-feedback">
+                    Feedback Loading...
+                  </p>
+                </div>
+                <!-- Extracted Summary Table -->
+                <div class="col-md-5">
+                  <h6 class="font-weight-bold text-muted mb-2"><i class="fas fa-list mr-1"></i> Extracted Facts Summary:</h6>
+                  <table class="table table-sm table-striped table-extracted">
+                    <thead>
+                      <tr>
+                        <th>Nutrient</th>
+                        <th>Detected Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Calories</td>
+                        <td id="td-calories">-</td>
+                      </tr>
+                      <tr>
+                        <td>Sugar</td>
+                        <td id="td-sugar">-</td>
+                      </tr>
+                      <tr>
+                        <td>Fat</td>
+                        <td id="td-fat">-</td>
+                      </tr>
+                      <tr>
+                        <td>Saturated Fat</td>
+                        <td id="td-saturated_fat">-</td>
+                      </tr>
+                      <tr>
+                        <td>Proteins</td>
+                        <td id="td-proteins">-</td>
+                      </tr>
+                      <tr>
+                        <td>Fibers</td>
+                        <td id="td-fibers">-</td>
+                      </tr>
+                      <tr>
+                        <td>Sodium</td>
+                        <td id="td-sodium">-</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="result-footer">
+              <i class="fas fa-check-circle text-success mr-2"></i>
+              <span>Validated successfully. Calculation saved to database.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container text-center">
+        <img
+          src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+          width="40"
+          height="40"
+          class="d-inline-block align-top mr-2 rounded-circle"
+          alt="Health Logo"
+        />
+        <h4 class="d-inline-block">Health Score Predictor</h4>
+        <p class="mt-2 text-muted small">Making nutritional validation accessible via OCR technology</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="{{ url_for('static', filename='js/ocr.js') }}"></script>
+
+    <script>
+      $(document).ready(function() {
+        const dropZone = $('#drop-zone');
+        const fileInput = $('#file-input');
+        const video = document.getElementById('camera-feed');
+        let localStream = null;
+
+        // Trigger file select click (Fixed recursion: fileInput is OUTSIDE dropZone now!)
+        dropZone.on('click', function() {
+          fileInput.click();
+        });
+
+        // Drag and drop event handlers
+        dropZone.on('dragover', function(e) {
+          e.preventDefault();
+          $(this).addClass('dragover');
+        });
+
+        dropZone.on('dragleave', function() {
+          $(this).removeClass('dragover');
+        });
+
+        dropZone.on('drop', function(e) {
+          e.preventDefault();
+          $(this).removeClass('dragover');
+          
+          const files = e.originalEvent.dataTransfer.files;
+          if (files.length > 0) {
+            handleImageUpload(files[0]);
+          }
+        });
+
+        fileInput.on('change', function() {
+          if (this.files.length > 0) {
+            handleImageUpload(this.files[0]);
+          }
+        });
+
+        $('#btn-reupload').on('click', function() {
+          $('#preview-box').hide();
+          dropZone.show();
+          fileInput.val('');
+          $('#ocr-progress-container').hide();
+          $('#result-box').hide();
+        });
+
+        // Handles displaying preview and running OCR
+        function handleImageUpload(file) {
+          if (!file.type.startsWith('image/')) {
+            alert('Please upload a valid image file (PNG, JPG, etc.)');
+            return;
+          }
+
+          // Show preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            $('#preview-img').attr('src', e.target.result);
+            dropZone.hide();
+            $('#preview-box').show();
+          };
+          reader.readAsDataURL(file);
+
+          runExtractionAndPrediction(file);
+        }
+
+        // Camera Logic
+        $('#btn-start-camera').on('click', function() {
+          $('#camera-placeholder').hide();
+          $('#camera-feed').show();
+          $('.camera-container').addClass('pulse');
+
+          navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment', width: 640, height: 480 } 
+          })
+          .then(function(stream) {
+            localStream = stream;
+            video.srcObject = stream;
+            
+            // Enable controls
+            $('#btn-capture').prop('disabled', false);
+            $('#btn-stop-camera').prop('disabled', false);
+            $('#btn-start-camera').prop('disabled', true);
+          })
+          .catch(function(err) {
+            console.error("Camera access error:", err);
+            alert("Could not access camera: " + err.message);
+            $('#camera-placeholder').show();
+            $('#camera-feed').hide();
+            $('.camera-container').removeClass('pulse');
+          });
+        });
+
+        function stopCameraStream() {
+          if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+          }
+          video.srcObject = null;
+          $('#camera-placeholder').show();
+          $('#camera-feed').hide();
+          $('.camera-container').removeClass('pulse');
+
+          // Reset buttons
+          $('#btn-capture').prop('disabled', true);
+          $('#btn-stop-camera').prop('disabled', true);
+          $('#btn-start-camera').prop('disabled', false);
+        }
+
+        $('#btn-stop-camera').on('click', function() {
+          stopCameraStream();
+        });
+
+        $('#btn-capture').on('click', function() {
+          const canvas = document.getElementById('capture-canvas');
+          const context = canvas.getContext('2d');
+          
+          // Match size
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 480;
+          
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          
+          // Convert to blob and trigger scan
+          canvas.toBlob(function(blob) {
+            if (blob) {
+              // Convert blob to file object for Tesseract
+              const file = new File([blob], "captured_label.jpg", { type: "image/jpeg" });
+              
+              // Preview captured image on the left column preview space
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                $('#preview-img').attr('src', e.target.result);
+                dropZone.hide();
+                $('#preview-box').show();
+              };
+              reader.readAsDataURL(file);
+
+              // Stop camera
+              stopCameraStream();
+
+              // Run scan
+              runExtractionAndPrediction(file);
+            }
+          }, 'image/jpeg');
+        });
+
+        // Run OCR and predict immediately
+        function runExtractionAndPrediction(file) {
+          // Clear results
+          $('#result-box').hide();
+          
+          // Show progress bar
+          $('#ocr-progress-container').show();
+          $('#ocr-progress').css('width', '0%');
+          $('#ocr-status-msg').text('Initializing OCR Engine...');
+
+          performOCR(
+            file,
+            function(statusMsg, percent) {
+              $('#ocr-status-msg').text(statusMsg);
+              $('#ocr-progress').css('width', percent + '%');
+            },
+            function(data, rawText) {
+              $('#ocr-progress-container').hide();
+              
+              // Populate raw parsed values summary table
+              $('#td-calories').text(data.calories !== null ? data.calories + ' kcal' : 'Not detected (0)');
+              $('#td-sugar').text(data.sugar !== null ? data.sugar + ' g' : 'Not detected (0)');
+              $('#td-fat').text(data.fat !== null ? data.fat + ' g' : 'Not detected (0)');
+              $('#td-saturated_fat').text(data.saturated_fat !== null ? data.saturated_fat + ' g' : 'Not detected (0)');
+              $('#td-proteins').text(data.proteins !== null ? data.proteins + ' g' : 'Not detected (0)');
+              $('#td-fibers').text(data.fibers !== null ? data.fibers + ' g' : 'Not detected (0)');
+              $('#td-sodium').text(data.sodium !== null ? data.sodium + ' mg' : 'Not detected (0)');
+
+              // Submit parsed data to model
+              const submitData = {
+                name: 'OCR Scanned Product',
+                calories: data.calories !== null ? data.calories : 0,
+                sugar: data.sugar !== null ? data.sugar : 0,
+                fat: data.fat !== null ? data.fat : 0,
+                saturated_fat: data.saturated_fat !== null ? data.saturated_fat : 0,
+                proteins: data.proteins !== null ? data.proteins : 0,
+                fibers: data.fibers !== null ? data.fibers : 0,
+                sodium: data.sodium !== null ? data.sodium : 0
+              };
+
+              // Call backend
+              $.ajax({
+                url: '/manual',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(submitData),
+                success: function(response) {
+                  // Display result
+                  const score = Math.round(response.score);
+                  $('#res-score').text(score);
+                  $('#res-feedback').text(response.feedback);
+                  
+                  const progressBar = $('#res-progress-bar');
+                  progressBar.css('width', score + '%');
+                  progressBar.removeClass('bg-danger bg-warning bg-success');
+                  
+                  if (score < 40) {
+                    progressBar.addClass('bg-danger');
+                  } else if (score < 70) {
+                    progressBar.addClass('bg-warning');
+                  } else {
+                    progressBar.addClass('bg-success');
+                  }
+
+                  $('#result-box').fadeIn();
+                  
+                  // Scroll to result
+                  $('html, body').animate({
+                    scrollTop: $('#result-box').offset().top - 80
+                  }, 800);
+                },
+                error: function() {
+                  alert("Failed to calculate score. Please try uploading another picture.");
+                }
+              });
+            },
+            function(errorMsg) {
+              $('#ocr-progress-container').hide();
+              alert("OCR Error: " + errorMsg);
+            }
+          );
+        }
+      });
+    </script>
+  </body>
+</html>

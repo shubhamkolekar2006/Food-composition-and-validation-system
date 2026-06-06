@@ -131,6 +131,11 @@
                 ><i class="fas fa-barcode mr-1"></i> Scan Product</a
               >
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ocr"
+                ><i class="fas fa-camera mr-1"></i> OCR Scan</a
+              >
+            </li>
           </ul>
         </div>
       </div>
@@ -145,11 +150,14 @@
         <p class="lead mb-4">
           Discover the nutritional value of your food products instantly
         </p>
-        <a href="/manual" class="btn btn-outline-light btn-lg">
+        <a href="/manual" class="btn btn-outline-light btn-lg m-1">
           <i class="fas fa-keyboard mr-2"></i> Enter Manually
         </a>
-        <a href="/scan" class="btn btn-outline-light btn-lg">
+        <a href="/scan" class="btn btn-outline-light btn-lg m-1">
           <i class="fas fa-barcode mr-2"></i> Scan Barcode
+        </a>
+        <a href="/ocr" class="btn btn-outline-light btn-lg m-1">
+          <i class="fas fa-camera mr-2"></i> Scan Label (OCR)
         </a>
       </div>
     </div>
@@ -157,8 +165,8 @@
     <!-- Features Section -->
     <div class="container">
       <div class="row">
-        <div class="col-md-4">
-          <div class="feature-card text-center">
+        <div class="col-md-3">
+          <div class="feature-card text-center h-100">
             <div class="feature-icon">
               <i class="fas fa-heartbeat"></i>
             </div>
@@ -170,28 +178,40 @@
           </div>
         </div>
 
-        <div class="col-md-4">
-          <div class="feature-card text-center">
+        <div class="col-md-3">
+          <div class="feature-card text-center h-100">
             <div class="feature-icon">
               <i class="fas fa-barcode"></i>
             </div>
             <h3>Barcode Scanning</h3>
             <p>
               Simply scan product barcodes to retrieve nutritional information
-              instantly.
+              instantly from our database.
             </p>
           </div>
         </div>
 
-        <div class="col-md-4">
-          <div class="feature-card text-center">
+        <div class="col-md-3">
+          <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+              <i class="fas fa-camera"></i>
+            </div>
+            <h3>OCR Scan</h3>
+            <p>
+              Extract calories, sugar, fat, sodium, and other facts directly from photos of nutrition labels.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="feature-card text-center h-100">
             <div class="feature-icon">
               <i class="fas fa-chart-bar"></i>
             </div>
             <h3>Nutritional Insights</h3>
             <p>
-              Understand the nutritional value of your food with detailed
-              breakdowns.
+              Understand the nutritional quality of your food with detailed
+              grades and feedback.
             </p>
           </div>
         </div>
@@ -210,8 +230,7 @@
                 Method
               </h4>
               <p>
-                Either enter nutritional information manually or scan a product
-                barcode.
+                Enter nutritional values manually, scan a product barcode, or scan a nutrition facts label with OCR.
               </p>
             </div>
             <div class="col-md-6 mb-4">

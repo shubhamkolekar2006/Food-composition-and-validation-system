@@ -117,6 +117,10 @@ def manual():
         return jsonify({'error': 'An unexpected server error occurred'}), 500
 
 
+@app.route('/ocr', methods=['GET'])
+def ocr():
+    return render_template('ocr.html')
+
 
 @app.route('/scan', methods=['GET', 'POST'])
 def scan():
