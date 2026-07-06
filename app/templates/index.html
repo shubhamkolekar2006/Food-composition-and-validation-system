@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intelligent Food Composition System</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #382aa3;
+        --secondary-color: #6c63ff;
+        --dark-color: #343a40;
+        --accent-emerald: #10b981;
+        --accent-amber: #f59e0b;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7ff;
+        color: #343a40;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Startup Welcome Splash Screen styling */
+      #startup-splash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #1e1b4b 0%, #090d16 100%);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+      }
+
+      #startup-splash.fade-out {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .splash-logo-container {
+        position: relative;
+        margin-bottom: 2rem;
+        animation: pulseLogo 2s infinite ease-in-out;
+      }
+
+      .splash-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid rgba(108, 99, 255, 0.4);
+        box-shadow: 0 0 30px rgba(108, 99, 255, 0.5);
+      }
+
+      @keyframes pulseLogo {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(108, 99, 255, 0.3); }
+        50% { transform: scale(1.06); box-shadow: 0 0 50px rgba(108, 99, 255, 0.7); }
+      }
+
+      .splash-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255,255,255,0.1);
+        border-radius: 50%;
+        border-top-color: var(--secondary-color);
+        animation: spin 1s linear infinite;
+        margin-top: 1.5rem;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Dark Mode Overrides */
+      body.dark-mode {
+        background-color: #0f172a;
+        color: #f1f5f9;
+      }
+
+      body.dark-mode .feature-card {
+        background-color: #1e293b;
+        color: #f1f5f9;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      }
+
+      body.dark-mode .text-dark {
+        color: #f1f5f9 !important;
+      }
+
+      body.dark-mode .text-muted {
+        color: #94a3b8 !important;
+      }
+
+      body.dark-mode footer {
+        background: #090d16;
+      }
+
+      /* Theme toggle button styling */
+      .theme-btn {
+        background: transparent;
+        border: none;
+        color: white !important;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 50%;
+        transition: transform 0.3s ease;
+      }
+
+      .theme-btn:hover {
+        transform: rotate(20deg);
+      }
+
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      body.dark-mode .navbar {
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        color: white !important;
+      }
+
+      .nav-link {
+        color: rgba(255,255,255,0.85) !important;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white !important;
+      }
+
+      .active-nav {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white !important;
+      }
+
+      /* Hero Section Gradient */
+      .hero-section {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--secondary-color) 100%
+        );
+        color: white;
+        padding: 5rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 30px 30px;
+        box-shadow: 0 10px 30px rgba(56, 42, 163, 0.15);
+      }
+
+      /* Digital Clock & Greeting Widget (Sleek Compact Pill) */
+      .welcome-clock-widget {
+        max-width: 320px;
+        margin: 0 auto 1.5rem auto;
+        padding: 0.6rem 1.25rem;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 50px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        animation: fadeInUp 1s ease;
+      }
+
+      .clock-time {
+        font-size: 1.45rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 0.05rem;
+        background: linear-gradient(to right, #ffffff, #e9d5ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .clock-date {
+        font-size: 0.8rem;
+        font-weight: 500;
+        opacity: 0.8;
+        letter-spacing: 0.3px;
+      }
+
+      .welcome-greeting {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.2rem;
+        color: #e9d5ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .welcome-greeting i {
+        margin-right: 0.4rem;
+      }
+
+      .feature-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 2rem;
+        padding: 2.5rem 2rem;
+        background: white;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(108, 99, 255, 0.15);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .dashboard-glass-btn {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white !important;
+        transition: all 0.3s ease;
+      }
+      
+      .dashboard-glass-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      footer {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        color: #94a3b8;
+        padding: 1rem 0;
+        margin-top: auto;
+      }
+    </style>
+  </head>
+  <body class="dark-mode">
+    <!-- Startup Welcome Splash Screen -->
+    <div id="startup-splash">
+      <div class="splash-logo-container">
+        <img
+          src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+          class="splash-logo"
+          alt="Health Logo"
+        />
+      </div>
+      <h2 class="font-weight-bold mb-2 text-center animate__animated animate__fadeIn">Welcome to Health Score Predictor</h2>
+      <p class="text-muted text-center animate__animated animate__fadeIn animate__delay-1s">Initializing Food composition validation system...</p>
+      <div class="splash-spinner"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <img
+            src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+            width="40"
+            height="40"
+            class="d-inline-block align-top mr-2 rounded-circle"
+            alt="Health Logo"
+          />
+          Health Score Predictor
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto align-items-lg-center">
+            <li class="nav-item">
+              <a class="nav-link active-nav" href="/"><i class="fas fa-home mr-1"></i> Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/dashboard"><i class="fas fa-chart-line mr-1"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manual"><i class="fas fa-keyboard mr-1"></i> Manual Predict</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/scan"><i class="fas fa-barcode mr-1"></i> Scan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ocr"><i class="fas fa-camera mr-1"></i> OCR Scan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/compare"><i class="fas fa-exchange-alt mr-1"></i> Compare</a>
+            </li>
+            <li class="nav-item ml-lg-3">
+              <button onclick="toggleDarkMode()" class="theme-btn" id="theme-toggle-btn" aria-label="Toggle Dark Mode">
+                <i class="fas fa-moon" id="theme-toggle-icon"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section text-center">
+      <div class="container">
+        <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInDown">
+          Intelligent Food Validation
+        </h1>
+        <p class="lead mb-4 animate__animated animate__fadeInUp" style="max-width: 700px; margin: 0 auto;">
+          Analyze packaged food products, validate nutritional facts, and calculate machine learning-driven health scores.
+        </p>
+
+        <!-- Real-Time Digital Clock & Dynamic Welcome Greeting -->
+        <div class="welcome-clock-widget animate__animated animate__fadeInUp">
+          <div class="clock-time" id="live-clock">12:00:00 AM</div>
+          <div class="clock-date" id="live-date">Loading date...</div>
+          <div class="welcome-greeting" id="live-greeting">
+            <i class="fas fa-spinner fa-spin"></i> Initializing System Dashboard...
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center flex-wrap animate__animated animate__fadeInUp">
+          <a href="/manual" class="btn btn-light btn-lg m-2 font-weight-bold text-primary" style="border-radius: 50px;">
+            <i class="fas fa-keyboard mr-2"></i> Enter Manually
+          </a>
+          <a href="/scan" class="btn btn-outline-light btn-lg m-2 font-weight-bold" style="border-radius: 50px;">
+            <i class="fas fa-barcode mr-2"></i> Scan Barcode
+          </a>
+          <a href="/ocr" class="btn btn-outline-light btn-lg m-2 font-weight-bold" style="border-radius: 50px;">
+            <i class="fas fa-camera mr-2"></i> OCR Scan Label
+          </a>
+          <a href="/dashboard" class="btn btn-lg m-2 font-weight-bold dashboard-glass-btn" style="border-radius: 50px;">
+            <i class="fas fa-chart-line mr-2"></i> View Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container my-5">
+      <div class="text-center mb-5">
+        <h2 class="font-weight-bold text-dark">System Capabilities</h2>
+        <p class="text-muted">A production-grade environment built to validate nutrition parameters and ensure safety.</p>
+      </div>
+
+      <div class="row">
+        <!-- Dashboard -->
+        <div class="col-md-4">
+          <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3 class="font-weight-bold">Intelligent Dashboard</h3>
+            <p class="text-muted">
+              Track recent scan history, monitor average health scores, warning frequencies, and brand distributions.
+            </p>
+            <a href="/dashboard" class="btn btn-sm btn-link font-weight-bold text-primary">Go to Dashboard <i class="fas fa-arrow-right ml-1"></i></a>
+          </div>
+        </div>
+
+        <!-- Validation Engine -->
+        <div class="col-md-4">
+          <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+              <i class="fas fa-shield-halved text-success"></i>
+            </div>
+            <h3 class="font-weight-bold">Validation Engine</h3>
+            <p class="text-muted">
+              Compares label OCR text scans directly against our database to flag inconsistencies and calculate validation confidence.
+            </p>
+            <a href="/ocr" class="btn btn-sm btn-link font-weight-bold text-primary">Perform OCR Scan <i class="fas fa-arrow-right ml-1"></i></a>
+          </div>
+        </div>
+
+        <!-- Product Comparison -->
+        <div class="col-md-4">
+          <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+              <i class="fas fa-scale-balanced text-info"></i>
+            </div>
+            <h3 class="font-weight-bold">Side-by-Side Compare</h3>
+            <p class="text-muted">
+              Select two food products to compare macros, ingredients, health scores, and get a decision on the healthier choice.
+            </p>
+            <a href="/compare" class="btn btn-sm btn-link font-weight-bold text-primary">Compare Products <i class="fas fa-arrow-right ml-1"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <!-- Explainable Score -->
+        <div class="col-md-6">
+          <div class="feature-card text-center h-100">
+            <div class="feature-icon text-warning">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h3 class="font-weight-bold">Explainable ML Score</h3>
+            <p class="text-muted">
+              We decompose feature contributions (SHAP representation) for Sugar, Proteins, Fibers, Sodium, Saturated Fats, and Calories to show exactly why a product scored the way it did.
+            </p>
+          </div>
+        </div>
+
+        <!-- Smart Warnings -->
+        <div class="col-md-6">
+          <div class="feature-card text-center h-100">
+            <div class="feature-icon text-danger">
+              <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-weight-bold">Smart Nutrition Warnings</h3>
+            <p class="text-muted">
+              Instantly flags safety alerts such as High Sugar, High Sodium, Saturated Fats, and the presence of Palm Oil or Artificial Sweeteners.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto text-center">
+          <h2 class="font-weight-bold mb-4 text-dark">How It Works</h2>
+          <div class="row text-left mt-5">
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2" style="border-radius: 50%;">1</span> Query Database
+              </h4>
+              <p class="text-muted">
+                Scan or enter the barcode. If found in the database, we load the official product details and model prediction.
+              </p>
+            </div>
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2" style="border-radius: 50%;">2</span> Validate with OCR
+              </h4>
+              <p class="text-muted">
+                Capture the physical nutrition label using OCR. The engine compares it with the database and flags any discrepancies.
+              </p>
+            </div>
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2" style="border-radius: 50%;">3</span> Smart Warnings & Insights
+              </h4>
+              <p class="text-muted">
+                Read explanations showing why the health score was assigned, alongside ingredient and allergen warnings.
+              </p>
+            </div>
+            <div class="col-md-6 mb-4">
+              <h4>
+                <span class="badge badge-primary mr-2" style="border-radius: 50%;">4</span> Compare & Select
+              </h4>
+              <p class="text-muted">
+                Compare with alternative products and make the healthier purchase decision.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container text-center d-flex flex-column flex-sm-row align-items-center justify-content-center">
+        <img
+          src="{{ url_for('static', filename='images/healthy-food-logo-design-with-leaf-elements-organic-food-design-vector.jpg') }}"
+          width="28"
+          height="28"
+          class="d-inline-block align-top mr-2 rounded-circle"
+          alt="Health Logo"
+        />
+        <span class="font-weight-bold text-white mr-2">Health Score Predictor</span>
+        <span class="text-muted d-none d-sm-inline">•</span>
+        <span class="text-muted ml-sm-2">Making nutritional information accessible to everyone</span>
+      </div>
+    </footer>
+
+    <!-- Digital Clock, Greetings & Startup Splash Script -->
+    <script>
+      function updateClock() {
+        const now = new Date();
+        
+        // Format Time
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        let seconds = now.getSeconds();
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        seconds = seconds < 10 ? '0'+seconds : seconds;
+        const timeStr = `${hours}:${minutes}:${seconds} ${ampm}`;
+        
+        // Format Date
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const dayStr = days[now.getDay()];
+        const monthStr = months[now.getMonth()];
+        const dateNum = now.getDate();
+        const year = now.getFullYear();
+        const dateStr = `${dayStr}, ${monthStr} ${dateNum}, ${year}`;
+        
+        // Set dynamic welcome greeting based on time of day
+        let greeting = "Welcome to the System";
+        let icon = "fa-sun";
+        const currentHour = now.getHours();
+        if (currentHour >= 5 && currentHour < 12) {
+          greeting = "Good Morning!";
+          icon = "fa-cloud-sun";
+        } else if (currentHour >= 12 && currentHour < 17) {
+          greeting = "Good Afternoon!";
+          icon = "fa-sun";
+        } else {
+          greeting = "Good Evening!";
+          icon = "fa-moon";
+        }
+        
+        const clockEl = document.getElementById('live-clock');
+        const dateEl = document.getElementById('live-date');
+        const greetingEl = document.getElementById('live-greeting');
+        
+        if (clockEl) clockEl.innerText = timeStr;
+        if (dateEl) dateEl.innerText = dateStr;
+        if (greetingEl) {
+          greetingEl.innerHTML = `<i class="fas ${icon}"></i> ${greeting} Welcome to Food Validation`;
+        }
+      }
+
+      function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Run clock updates
+        updateClock();
+        setInterval(updateClock, 1000);
+        
+        // Fade out splash screen after 1.8s
+        setTimeout(() => {
+          const splash = document.getElementById('startup-splash');
+          if (splash) {
+            splash.classList.add('fade-out');
+          }
+        }, 1800);
+        
+        // Theme setting - Default to dark unless saved theme is explicitly light
+        const savedTheme = localStorage.getItem('theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (savedTheme === 'light') {
+          document.body.classList.remove('dark-mode');
+          if (icon) {
+            icon.className = 'fas fa-moon';
+          }
+        } else {
+          document.body.classList.add('dark-mode');
+          if (icon) {
+            icon.className = 'fas fa-sun';
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
