@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 10000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app.app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app"]

@@ -50,3 +50,7 @@ def create_app(config_class=Config):
             
     return app
 
+
+# Create the package-level app instance for WSGI/Gunicorn entrypoint
+app = create_app()
+
